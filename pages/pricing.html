@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing Page</title>
+
+    <!-- MAIN CSS -->
+    <link rel="stylesheet" href="pricing.css">
+
+</head>
+<body>
+
+
+  <h1>Pricing</h1>
+
+  <section id="pricing" data-stellar-background-ratio="0.5">
+    <div class="container">
+         <div class="row">
+
+              <div class="col-md-12 col-sm-12">
+                   <div class="section-title">
+                        <h1>Choose any plan</h1>
+                   </div>
+              </div>
+
+              <div class="col-md-4 col-sm-6">
+                   <div class="pricing-thumb">
+                       <div class="pricing-title">
+                            <h2>Standard</h2>
+                       </div>
+                       <div class="pricing-info">
+                             <p>20 Responsive Designs</p>
+                             <p>10 Dashboards</p>
+                             <p>1 TB Storage</p>
+                             <p>6 TB Bandwidth</p>
+                             <p>24-hour Support</p>
+                       </div>
+                       <div class="pricing-bottom">
+                             <span class="pricing-dollar">$200/mo</span>
+                             <a href="pages/pricing.html" class="section-btn pricing-btn">Register now</a>
+                       </div>
+                   </div>
+              </div>
+
+              <div class="col-md-4 col-sm-6">
+                   <div class="pricing-thumb">
+                       <div class="pricing-title">
+                            <h2>Advanced</h2>
+                       </div>
+                       <div class="pricing-info">
+                             <p>50 Responsive Designs</p>
+                             <p>30 Dashboards</p>
+                             <p>2 TB Storage</p>
+                             <p>12 TB Bandwidth</p>
+                             <p>15-minute Support</p>
+                       </div>
+                       <div class="pricing-bottom">
+                             <span class="pricing-dollar">$350/mo</span>
+                             <a href="pages/pricing.html" class="section-btn pricing-btn">Register now</a>
+                       </div>
+                   </div>
+              </div>
+
+              <div class="col-md-4 col-sm-6">
+                   <div class="pricing-thumb">
+                       <div class="pricing-title">
+                            <h2>Premium</h2>
+                       </div>
+                       <div class="pricing-info">
+                             <p>100 Responsive Designs</p>
+                             <p>60 Dashboards</p>
+                             <p>5 TB Storage</p>
+                             <p>25 TB Bandwidth</p>
+                             <p>1-minute Support</p>
+                       </div>
+                       <div class="pricing-bottom">
+                             <span class="pricing-dollar">$550/mo</span>
+                             <a href="pages/pricing.html" class="section-btn pricing-btn">Register now</a>
+                       </div>
+                   </div>
+              </div>
+              
+         </div>
+    </div>
+</section>   
+
+
+
+
+
+
+  <div id="smart-button-container">
+    <div style="text-align: center;">
+      <div >
+        <p></p>
+        <select id="item-options"><option value="1" price="0.1" >1 - 0.1 HKD</option>
+                                  <option value="2" price="0.2" >2 - 0.2 HKD</option>
+                                  <option value="3" price="0.3" >3 - 0.3 HKD</option>
+        </select>
+        <br>
+        <select style="visibility: hidden" id="quantitySelect"></select>
+      </div>
+
+
+
+    <div id="paypal-button-container"></div>
+    </div>
+  </div>
+  <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=HKD" data-sdk-integration-source="button-factory"></script>
+  <script>
+    function initPayPalButton() {
+      var shipping = 0;
+      var itemOptions = document.querySelector("#smart-button-container #item-options");
+  var quantity = parseInt();
+  var quantitySelect = document.querySelector("#smart-button-container #quantitySelect");
+  if (!isNaN(quantity)) {
+    quantitySelect.style.visibility = "visible";
+  }
+  var orderDescription = '';
+  if(orderDescription === '') {
+    orderDescription = 'Item';
+  }
+  paypal.Buttons({
+    style: {
+      shape: 'pill',
+      color: 'blue',
+      layout: 'vertical',
+      label: 'checkout',
+      
+    },
+    createOrder: function(data, actions) {
+      var selectedItemDescription = itemOptions.options[itemOptions.selectedIndex].value;
+      var selectedItemPrice = parseFloat(itemOptions.options[itemOptions.selectedIndex].getAttribute("price"));
+      var tax = (0 === 0) ? 0 : (selectedItemPrice * (parseFloat(0)/100));
+      if(quantitySelect.options.length > 0) {
+        quantity = parseInt(quantitySelect.options[quantitySelect.selectedIndex].value);
+      } else {
+        quantity = 1;
+      }
+
+      tax *= quantity;
+      tax = Math.round(tax * 100) / 100;
+      var priceTotal = quantity * selectedItemPrice + parseFloat(shipping) + tax;
+      priceTotal = Math.round(priceTotal * 100) / 100;
+      var itemTotalValue = Math.round((selectedItemPrice * quantity) * 100) / 100;
+
+      return actions.order.create({
+        purchase_units: [{
+          description: orderDescription,
+          amount: {
+            currency_code: 'HKD',
+            value: priceTotal,
+            breakdown: {
+              item_total: {
+                currency_code: 'HKD',
+                value: itemTotalValue,
+              },
+              shipping: {
+                currency_code: 'HKD',
+                value: shipping,
+              },
+              tax_total: {
+                currency_code: 'HKD',
+                value: tax,
+              }
+            }
+          },
+          items: [{
+            name: selectedItemDescription,
+            unit_amount: {
+              currency_code: 'HKD',
+              value: selectedItemPrice,
+            },
+            quantity: quantity
+          }]
+        }]
+      });
+    },
+    onApprove: function(data, actions) {
+      return actions.order.capture().then(function(details) {
+        alert('Transaction completed by ' + details.payer.name.given_name + '!');
+      });
+    },
+    onError: function(err) {
+      console.log(err);
+    },
+  }).render('#paypal-button-container');
+}
+initPayPalButton();
+
+
+  $("1").change(function(){ 
+  alert("You selected some 1!");
+  })
+
+  </script>
+</body>
+</html>
